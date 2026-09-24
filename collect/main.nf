@@ -1,6 +1,7 @@
 #!usr/bin/env nextflow
 
 include {CONCAT} from './modules/concat'
+
 workflow {
 
     // Stand-in, not a real workflow step: fromPath() here fakes the channel
@@ -8,12 +9,12 @@ workflow {
     file_ch = channel.fromPath("samples/*")
     
     // TODO: Use collect() to ensure that the CONCAT process operates only
-    // once on all the files, rather than once per file. Call the CONCAT process
-    // on the newly transformed channel. 
+    // once on all the files, rather than once per file. Save this to a new
+    // variable
 
-    concat_ch = file_ch.collect()
-
-    mat = CONCAT(concat_ch)
+   
+    // Call the CONCAT process on the newly transformed channel. 
+   
 
 
 }

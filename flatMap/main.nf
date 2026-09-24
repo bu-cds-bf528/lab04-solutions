@@ -6,21 +6,24 @@ include {FASTQC} from './modules/fastqc'
 
 workflow {
 
-    // fromPath() + splitCsv() reads the samplesheet as one emission per row
-    // each row is created as a map, not a record
 
-    samplesheet_ch = channel.fromPath(params.samplesheet)
-    .splitCsv(header: true)
-    .map { row -> record(name: row.sample, r1: file(row.r1), r2: file(row.r2)) }
+    // TODO: Use map to transform each element produced by .splitCsv to a record
+    // matching the requirement for FASTQC
+
+    // Use channel.fromPath, params.samplesheet, .splitCsv and map() 
+
+    // This channel should contain records that have the name, r1, and r2 fields from
+    // each row in the samplesheet. This will look very similar to the map() exercise
+
+
     
     // TODO: Use flatMap to transform fastqc_input_ch so that it contains 4 separate
     // elements (1 for each FASTQ file)
 
-    fastqc_input_ch = samplesheet_ch.flatMap { it -> [record(name: it.name, fastq: it.r1), record(name: it.name, fastq: it.r2)] }
 
     // TODO: Call the FASTQC process on your newly created channel
 
-    fastqc = FASTQC(fastqc_input_ch)
+  
     
 
 }
