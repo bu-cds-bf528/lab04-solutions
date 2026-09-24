@@ -11,7 +11,8 @@ Quick definitions for vocabulary used throughout this lab, in case any of it is 
   brackets, e.g. `['sample_a', 'sample_b', 'sample_c']`. Same idea as a Python list.
 - **Channel**: a Nextflow object that holds a stream of values and feeds them to a
   process. Channels manage the flow of data between processes and enable asynchronous
-  execution and parallelism.
+  execution and parallelism. You will often need to make an initial channel that holds
+  your starting information or files, otherwise, nextflow outputs always create a channel.
 - **`channel.of(...)`**: builds a channel from the arguments you pass it. Each
   argument becomes its own emission, so `channel.of('a', 'b', 'c')` is a channel
   with 3 emissions. Passing a single list argument instead, like
