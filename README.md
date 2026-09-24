@@ -1,6 +1,7 @@
 # Lab - Nextflow Cardinality
 
-Please open this `README.md` by right-clicking and using `Show Preview`.
+Please open this `README.md` by right-clicking and using `Show Preview` or 
+`Open Preview`.
 
 ## Concepts you'll need
 
@@ -570,6 +571,9 @@ or regroup data using the right operator for the job.
 Go to the respectively named directory based on the header (map() code lives in
 map/)
 
+Each part will have you `cd` into the directory named. When finished, please ensure you
+return to the top-level of the directory and `cd` into the next one. 
+
 ### map()
 
 **Formal Definition**
@@ -610,12 +614,11 @@ to properly transform the initial channel so that the workflow completes
 successfully. Feel free to use the `.view()` operator to help you determine if
 your use of the operator is creating the appropriate channel.
 
-When you are confident with your `main.nf`, please use the following command:
+When you are confident with your `map/main.nf`, please use the following commands:
 
 ```nextflow
-nextflow run main.nf -profile local,conda   # if you are inside the directory
-
-nextflow run map/main.nf -profile local,conda # if you remained at the top-level directory
+cd map/
+nextflow run main.nf -profile local,conda 
 ```
 
 ### flatMap()
@@ -662,6 +665,7 @@ determine if your use of the operator is creating the appropriate channel.
 When you are confident with your `main.nf`, please use the following command:
 
 ```nextflow
+cd flatMap/
 nextflow run main.nf -profile local,conda
 ```
 
@@ -679,6 +683,9 @@ assembly needs to be counted at several candidate k values, and we don't know
 in advance which k will give the cleanest spectrum. `combine()` builds every
 (assembly, k) pairing up front -- 2 assemblies x 4 k-values -- so `KMER_COUNT`
 can run once per pairing and the resulting spectra can be compared afterward.
+
+This would also be useful for when you are unsure of the appropriate value for
+some parameter and wish to try a range of them to observe their results. 
 
 <details>
 <summary>Show diagram</summary>
@@ -711,8 +718,13 @@ expect from N assemblies x M k-values before the process runs.
 When you are confident with your `main.nf`, please use the following command:
 
 ```nextflow
+cd combine/
 nextflow run main.nf
 ```
+
+Please note that the process it's passed to is fake, it simply prints out the values
+passed to it. Kmer counting is somewhat computationally intensive so this script doesn't
+actually run it so that you can see the answer quickly. 
 
 ### collect()
 
@@ -728,6 +740,18 @@ into one table for downstream analysis. If `CONCAT` ran once per file, each
 invocation would only ever see one file at a time. `collect()` ensures every
 file is gathered into a single list first, so `CONCAT` runs exactly once, with
 every file as one input.
+
+For this example, we have generated the count of reads falling into exons (mRNAseq)
+for 4 different samples (2 control and 2 experimental). In order to do a differential
+expression analysis, we need to concatenate all of the counts for each gene for each 
+sample into the same file. 
+
+If you look at the `*.exon.txt` files, you'll notice that these files have two columns,
+gene and count, and all of the rows are the same (representing every gene in the GTF file
+used for quantification). 
+
+Look at the output created, `concat_df.csv`, and you should be able to see how all 4 files
+were needed to generate this output.
 
 <details>
 <summary>Show diagram</summary>
@@ -757,6 +781,7 @@ channel.
 When you are confident with your `main.nf`, please use the following command:
 
 ```nextflow
+cd collect/
 nextflow run main.nf -profile local,conda
 ```
 
@@ -768,7 +793,8 @@ first element of each emitted tuple) and emits one combined item per match.
 Unlike `combine`, which crosses every item with every item, `join` pairs up
 items that share a key -- if both channels emit N items with matching keys,
 `join` emits N items, not N x M. Order doesn't matter: `join` matches on the
-key itself, not on emission position.
+key itself, not on emission position. When joining records, you should
+specify the value of the record to join using `by: "value-of-record-to-join-on"`
 
 **Bioinformatics Pipeline Framing**
 Here, each sample was sequenced from a different bacterial strain, so reads
@@ -809,6 +835,7 @@ that `ALIGN` runs once per sample. Feel free to use the `.view()` and
 When you are confident with your `main.nf`, please use the following command:
 
 ```nextflow
+cd join/
 nextflow run main.nf
 ```
 

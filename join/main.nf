@@ -7,37 +7,41 @@
 
 process ALIGN {
     input:
-    tuple val(sample), val(reads), val(reference)
+    val rec
 
     output:
-    tuple val(sample), stdout
+    stdout
 
     script:
     """
-    echo "aligned ${reads} for ${sample} against ${reference}"
+    echo "aligned ${rec.reads} for ${rec.id} against ${rec.reference}"
     """
 }
 
 workflow {
-    reads_ch = channel.fromList([
-        ['sample_a', 'sample_a_R1.fq.gz'],
-        ['sample_b', 'sample_b_R1.fq.gz'],
-        ['sample_c', 'sample_c_R1.fq.gz'],
-    ])
+    reads_ch = channel.of(
+        record(id: 'sample_a', reads: 'sample_a_R1.fq.gz'),
+        record(id: 'sample_b', reads: 'sample_b_R1.fq.gz'),
+        record(id: 'sample_c', reads: 'sample_c_R1.fq.gz'),
+    )
 
-    // Deliberately out of order vs. reads_ch -- join() matches on sample id,
+    // Deliberately out of order vs. reads_ch -- join() matches on r.id,
     // not on emission position.
-    reference_ch = channel.fromList([
-        ['sample_b', 'pseudomonas_aeruginosa.fasta'],
-        ['sample_a', 'staph_aureus.fasta'],
-        ['sample_c', 'ecoli.fasta'],
-    ])
+    reference_ch = channel.of(
+        record(id: 'sample_b', reference: 'pseudomonas_aeruginosa.fasta'),
+        record(id: 'sample_a', reference: 'staph_aureus.fasta'),
+        record(id: 'sample_c', reference: 'ecoli.fasta'),
+    )
 
     // TODO: Use join() to pair each sample's reads with its matching reference
-    // by sample id (the first tuple element), so ALIGN receives exactly one
-    // reference per sample -- not the 3x3 cross product combine() would give.
+    // by id, so ALIGN receives exactly one reference per sample -- not the
+    // 3x3 cross product combine() would give.
+    //
+    // join() itself only knows how to match (key, value) tuples, so key each
+    // record by r.id before joining, then repackage the joined result back
+    // into a single record.
 
-    align_input_ch = reads_ch.join(reference_ch)
+    align_input_ch = reads_ch.join(reference_ch, by: "id")
 
     align_input_ch.view { v -> "[join] $v" }
     align_input_ch.count().view { n -> "[join: count] $n" }  // 3, not 9
