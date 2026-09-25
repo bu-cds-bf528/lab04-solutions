@@ -24,8 +24,12 @@ workflow {
 
     // combine(): cross product of every assembly with every k value.
     // 2 assemblies x 4 k-values -> 8 separate emissions.
-    kmer_jobs_ch = assemblies_ch.combine(k_values_ch)
+    // TODO: Use combine to generate the appropriate channel from the assemblies_ch and
+    // k_values_ch. Call this new channel, kmer_jobs_ch
+    
 
+
+    // Don't alter these
     kmer_jobs_ch.view { v -> "[combine: NxM] $v" }
     kmer_jobs_ch.count().view { n -> "[combine: count] $n" }  // 8
 
