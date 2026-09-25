@@ -15,6 +15,6 @@ workflow {
 
     // TODO: Add one line that calls .count() on ch_c and .view()s it.
 
-    
+    ch_c.count().view()
 
 }

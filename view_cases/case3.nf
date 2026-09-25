@@ -14,6 +14,6 @@ workflow {
 
     // TODO: Add one line that calls .count() on ch_b and .view()s it.
     ch_b.view { v -> "[case 3] $v" }
-    
+    ch_b.count().view()
 
 }

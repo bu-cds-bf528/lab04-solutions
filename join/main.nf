@@ -41,16 +41,10 @@ workflow {
     // record by r.id before joining, then repackage the joined result back
     // into a single record.
 
-    // Call the new channel align_input_ch
+    align_input_ch = reads_ch.join(reference_ch, by: "id")
 
-
-
-
-    // Don't alter this
     align_input_ch.view { v -> "[join] $v" }
-    align_input_ch.count().view { n -> "[join: count] $n" } 
+    align_input_ch.count().view { n -> "[join: count] $n" }  // 3, not 9
 
-
-    // Call the process on your joined channel
-    
+    ALIGN(align_input_ch)
 }
